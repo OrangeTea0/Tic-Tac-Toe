@@ -1,0 +1,87 @@
+print("Welcome to tic tac toe")
+
+def print_board(board):
+    grid_size = len(board)
+    print("\033c", end="")
+    print("\nTic-Tac-Toe\n")
+    for i, row in enumerate(board):
+        print(" | ".join(row))
+        if i < grid_size - 1:
+            print("-" * (grid_size * 4 - 1))
+    print("\n")
+
+def check_win(board, player, grid_size):
+    for i in range(grid_size):
+        if all([board[i][j] == player for j in range(grid_size)]) or all([board[j][i] == player for j in range(grid_size)]):
+            return True
+    if all([board[i][i] == player for i in range(grid_size)]) or all([board[i][grid_size - 1 - i] == player for i in range(grid_size)]):
+        return True
+    return False
+
+def is_full(board, grid_size):
+    return all(board[i][j] != " " for i in range(grid_size) for j in range(grid_size))
+
+def play_game(grid_size):
+    board = [[" " for _ in range(grid_size)] for _ in range(grid_size)]
+    score = {"X": 0, "O": 0}
+    current_player = "X"
+    
+    while True:
+        print_board(board)
+        print(f"Player {current_player}'s turn. Score - X: {score['X']} O: {score['O']}")
+        
+        while True:
+            try:
+                row = int(input(f"Enter row (1-{grid_size}): ")) - 1
+                col = int(input(f"Enter column (1-{grid_size}): ")) - 1
+                
+                if row < 0 or row >= grid_size or col < 0 or col >= grid_size or board[row][col] != " ":
+                    print("Invalid move! Try again.")
+                else:
+                    break
+            except ValueError:
+                print(f"Invalid input! Please enter integers between 1 and {grid_size}.")
+        
+        board[row][col] = current_player
+        
+        if check_win(board, current_player, grid_size):
+            print_board(board)
+            print(f"Player {current_player} wins!")
+            score[current_player] += 1
+            break
+        
+        if is_full(board, grid_size):
+            print_board(board)
+            print("It's a draw!")
+            break
+        
+        current_player = "O" if current_player == "X" else "X"
+
+def play_again():
+    while True:
+        response = input("Do you want to play again? (yes/no): ").lower()
+        if response == "yes":
+            return True
+        elif response == "no":
+            print("Thanks for playing!")
+            return False
+        else:
+            print("Invalid response. Please enter 'yes' or 'no'.")
+
+def main():
+    while True:
+        try:
+            grid_size = int(input("Enter grid size (3 to 25): "))
+            if grid_size < 3 or grid_size > 25:
+                print("Grid size must be between 3 and 25.")
+            else:
+                break
+        except ValueError:
+            print("Please enter a valid integer for the grid size.")
+
+    while True:
+        play_game(grid_size)
+        if not play_again():
+            break
+
+main()
